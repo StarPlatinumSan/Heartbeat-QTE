@@ -1,0 +1,203 @@
+@use "./variables" as *;
+
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	font-family: Handjet, sans-serif;
+	color: $white;
+}
+
+html,
+body {
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+.container {
+	background-color: $dark-gray;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	position: relative;
+}
+
+.diff {
+	position: absolute;
+	max-width: 50rem;
+	height: 100vh;
+	background-color: rgba(15, 15, 15);
+	right: 0;
+	top: 50%;
+	transform: translate(100%, -50%);
+	transition: transform 0.5s ease-in-out;
+	z-index: 5;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	padding-right: 1rem;
+	padding-left: 1rem;
+}
+
+.allButtons {
+	display: flex;
+	gap: 1rem;
+}
+
+.header {
+	background-color: #1d1d1d;
+	width: 100%;
+	padding: 4rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.center {
+	margin: 5rem;
+	position: relative;
+}
+
+.reflexe {
+	position: absolute;
+	width: 2px;
+	height: 50px;
+	background-color: $blue;
+	left: 50%;
+	top: 0;
+	transform: translate(-50%, -50%);
+	z-index: 2;
+	border-radius: 2px;
+}
+
+.line {
+	background-color: $blue;
+	width: 100vw;
+	height: 2px;
+	position: relative;
+	z-index: 1;
+}
+
+.buttonStart {
+	padding: 1rem;
+	border: none;
+	border-radius: 2px;
+	font-size: 2rem;
+	background-color: $green;
+	color: $dark-gray;
+	box-shadow: 2px 2px 5px black;
+	transition: transform 0.2s ease, box-shadow 0.2s ease-in-out, background-color 0.2s ease;
+	font-weight: 500;
+	margin: 2rem;
+
+	&:hover {
+		cursor: pointer;
+		background-color: #00bd00;
+	}
+
+	&:active {
+		transform: translateY(2px);
+		box-shadow: 5px 5px 5px rgba(0, 0, 0, 0);
+	}
+}
+
+.buttonDifficulty,
+.closeDiff,
+.btnDiff {
+	color: black;
+	padding: 1rem;
+	font-size: 2rem;
+	box-shadow: 2px 2px 5px black;
+	background-color: blueviolet;
+	border: none;
+	border-radius: 2px;
+	transition: transform 0.2s ease, box-shadow 0.2s ease-in-out, background-color 0.2s ease;
+
+	&:hover {
+		cursor: pointer;
+		background-color: rgb(119, 0, 230);
+	}
+
+	&:active {
+		transform: translateY(2px);
+		box-shadow: 5px 5px 5px rgba(0, 0, 0, 0);
+	}
+}
+
+.xButton {
+	background-color: $red;
+
+	&:hover {
+		cursor: pointer;
+		background-color: $dark-red;
+	}
+}
+
+.buttonDifficulty:disabled {
+	background-color: #1d1d1d;
+	cursor: auto;
+}
+
+.closeDiff {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2rem;
+	margin-left: auto;
+	width: 60px;
+	height: 60px;
+}
+
+.btnDiff {
+	background-color: $white;
+
+	&:hover {
+		cursor: pointer;
+		background-color: gray;
+	}
+}
+
+.manageButtons {
+	display: flex;
+
+	& > :last-child {
+		background-color: red;
+
+		&:hover {
+			background-color: $dark-red;
+		}
+	}
+}
+
+.beat {
+	background-color: #1d1d1d;
+	height: 15rem;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transform: translate(100%, -50%);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 3;
+}
+
+.beat svg {
+	max-width: 100%;
+	margin-bottom: 14px;
+}
+
+@keyframes translation {
+	0% {
+		transform: translate(calc(0vw + 100%), -50%);
+	}
+	100% {
+		transform: translate(-100vw, -50%);
+	}
+}
+
+#medium {
+	background-color: orange;
+}
