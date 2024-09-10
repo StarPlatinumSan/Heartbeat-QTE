@@ -5,6 +5,7 @@ function App() {
 	const [beats, setBeats] = useState<JSX.Element[]>([]);
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [isDifficultyButtonDisabled, setIsDifficultyButtonDisabled] = useState<boolean>(false);
+	const [spaceBarAllowed, setSpaceBarAllowed] = useState<boolean>(false);
 
 	const [animSpeed, setAnimSpeed] = useState<string>("6s");
 	const [typeBeat, setTypeBeat] = useState<string>("medium");
@@ -13,6 +14,7 @@ function App() {
 	const [repetition, setRepetition] = useState<number>(16);
 
 	const lvlRef = useRef<HTMLDivElement>(null);
+	const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
 
 	const handleClick = () => {
 		clearBeats();
@@ -33,6 +35,16 @@ function App() {
 		}
 	};
 
+	const stopGame = () => {
+		timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+		timeoutsRef.current = [];
+
+		clearBeats();
+		setIsActive(false);
+		setIsDifficultyButtonDisabled(false);
+		setSpaceBarAllowed(false);
+	};
+
 	const changeDifficulty = (event: React.MouseEvent<HTMLButtonElement>) => {
 		const clickedButton = event.currentTarget;
 		const allButtons = document.querySelectorAll(".btnDiff");
@@ -45,64 +57,119 @@ function App() {
 			}
 		});
 
-		if (clickedButton.id === "easy") {
-			setAnimSpeed("10s");
-			setTypeBeat("large");
-			setPairBeatGap(800);
-			setBeatGap(2000);
-			setRepetition(16);
-		} else if (clickedButton.id === "medium") {
-			setAnimSpeed("6s");
-			setTypeBeat("medium");
-			setPairBeatGap(250);
-			setBeatGap(1000);
-			setRepetition(16);
-		} else if (clickedButton.id === "hard") {
-			setAnimSpeed("4s");
-			setTypeBeat("medium");
-			setPairBeatGap(250);
-			setBeatGap(500);
-			setRepetition(24);
-		} else if (clickedButton.id === "extreme") {
-			setAnimSpeed("2.5s");
-			setTypeBeat("medium");
-			setPairBeatGap(150);
-			setBeatGap(500);
-			setRepetition(32);
-		} else if (clickedButton.id === "agony") {
-			setAnimSpeed("1s");
-			setTypeBeat("small");
-			setPairBeatGap(150);
-			setBeatGap(500);
-			setRepetition(32);
+		if (clickedButton.id !== "custom") {
+			if (clickedButton.id === "easy") {
+				setAnimSpeed("10s");
+				setTypeBeat("large");
+				setPairBeatGap(800);
+				setBeatGap(2000);
+				setRepetition(16);
+			} else if (clickedButton.id === "medium") {
+				setAnimSpeed("6s");
+				setTypeBeat("medium");
+				setPairBeatGap(250);
+				setBeatGap(1000);
+				setRepetition(16);
+			} else if (clickedButton.id === "hard") {
+				setAnimSpeed("4s");
+				setTypeBeat("medium");
+				setPairBeatGap(250);
+				setBeatGap(500);
+				setRepetition(24);
+			} else if (clickedButton.id === "extreme") {
+				setAnimSpeed("2.5s");
+				setTypeBeat("medium");
+				setPairBeatGap(150);
+				setBeatGap(500);
+				setRepetition(32);
+			} else if (clickedButton.id === "agony") {
+				setAnimSpeed("1s");
+				setTypeBeat("small");
+				setPairBeatGap(150);
+				setBeatGap(500);
+				setRepetition(32);
+			} else {
+				setAnimSpeed("15s");
+				setTypeBeat("small");
+				setPairBeatGap(150);
+				setBeatGap(500);
+				setRepetition(32);
+			}
 		}
+	};
+
+	const handleCustomSpeed = (event: React.ChangeEvent<HTMLInputElement>) => {
+		handleOrangeButton();
+		setAnimSpeed(event.target.value + "s");
+	};
+
+	const handleCustomSize = (val: string) => {
+		handleOrangeButton();
+		setTypeBeat(val);
+	};
+
+	const handleCustomRepetition = (event: React.ChangeEvent<HTMLInputElement>) => {
+		handleOrangeButton();
+
+		if (event.target.value === "") {
+			setRepetition(16);
+		} else {
+			setRepetition(Number(event.target.value));
+		}
+	};
+
+	const handleOrangeButton = () => {
+		const clickedButton = document.getElementById("custom");
+		if (clickedButton) {
+			clickedButton.style.backgroundColor = "orange";
+		}
+
+		const allButtons = document.querySelectorAll(".btnDiff");
+
+		allButtons.forEach((button) => {
+			if (button !== clickedButton) {
+				(button as HTMLElement).style.backgroundColor = "white";
+			}
+		});
 	};
 
 	useEffect(() => {
 		if (isActive) {
 			setIsDifficultyButtonDisabled(true);
+			setSpaceBarAllowed(true);
 
 			let beatIndex = 0;
+			const animationDuration = parseFloat(animSpeed) * 1000;
 
 			const addBeatPair = () => {
 				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
 
-				setTimeout(() => {
+				const secondBeatTimeout = setTimeout(() => {
 					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
 
 					beatIndex += 2;
 					if (beatIndex < repetition) {
-						setTimeout(addBeatPair, pairBeatGap);
+						const nextBeatTimeout = setTimeout(addBeatPair, pairBeatGap);
+						timeoutsRef.current.push(nextBeatTimeout);
 					} else {
 						setIsActive(false);
-						setIsDifficultyButtonDisabled(false);
+
+						const totalAnimationTime = animationDuration;
+
+						const enableDifficultyTimeout = setTimeout(() => {
+							setIsDifficultyButtonDisabled(false);
+							setSpaceBarAllowed(false);
+						}, totalAnimationTime);
+
+						timeoutsRef.current.push(enableDifficultyTimeout);
 					}
 				}, beatGap);
+				timeoutsRef.current.push(secondBeatTimeout);
 			};
 
 			addBeatPair();
 		}
-	}, [isActive]);
+	}, [isActive, animSpeed, typeBeat, pairBeatGap, beatGap, repetition]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -118,6 +185,27 @@ function App() {
 		};
 	}, []);
 
+	const clearBeats = () => {
+		setBeats([]);
+	};
+
+	const handleGame = (event: KeyboardEvent | MouseEvent) => {
+		if (((event.type === "keydown" && event.code === "Space") || (event.type === "mousedown" && event.button === 0)) && spaceBarAllowed && isActive) {
+			event.preventDefault();
+			console.log("AHHH");
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("keydown", handleGame);
+		window.addEventListener("mousedown", handleGame);
+
+		return () => {
+			window.removeEventListener("keydown", handleGame);
+			window.removeEventListener("mousedown", handleGame);
+		};
+	}, [spaceBarAllowed]);
+
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (event.code === "Space") {
@@ -131,10 +219,6 @@ function App() {
 			document.removeEventListener("keydown", handleKeyDown);
 		};
 	}, []);
-
-	const clearBeats = () => {
-		setBeats([]);
-	};
 
 	return (
 		<>
@@ -166,7 +250,37 @@ function App() {
 					</div>
 					<div className="complex">
 						<h2>Custom Difficulty</h2>
-						<p>Work in progress...</p>
+						<p>Customize your own difficulty.</p>
+						<button className="btnDiff" id="custom" onClick={changeDifficulty}>
+							Custom
+						</button>
+						<div className="speedDiv">
+							<h3>Beats speed:</h3>
+							<input type="range" id="speedRange" className="rangeInput" min={1} max={12} step={0.5} value={parseFloat(animSpeed)} onChange={handleCustomSpeed} />
+						</div>
+
+						<div className="sizeDiv">
+							<h3>Beat size:</h3>
+							<div className="radioLabel">
+								<input type="radio" className="size" id="smallRadio" name="radioSize" value={typeBeat} checked={typeBeat === "small"} onChange={() => handleCustomSize("small")} />
+								<label htmlFor="radioSize">Small</label>
+							</div>
+
+							<div className="radioLabel">
+								<input type="radio" className="size" id="mediumRadio" name="radioSize" value={typeBeat} checked={typeBeat === "medium"} onChange={() => handleCustomSize("medium")} />
+								<label htmlFor="radioSize">Medium</label>
+							</div>
+
+							<div className="radioLabel">
+								<input type="radio" className="size" id="largeRadio" name="radioSize" value={typeBeat} checked={typeBeat === "large"} onChange={() => handleCustomSize("large")} />
+								<label htmlFor="radioSize">Large</label>
+							</div>
+						</div>
+
+						<div className="repetitionDiv">
+							<h3>Number of beats:</h3>
+							<input type="number" id="repetitionInput" className="repetition" min={3} max={60} step={1} value={repetition} onChange={handleCustomRepetition} />
+						</div>
 					</div>
 				</div>
 				<header className="header">
@@ -184,7 +298,9 @@ function App() {
 					<button onClick={handleClick} className="buttonStart">
 						Start Beats
 					</button>
-					<button className="buttonStart">Reset</button>
+					<button className="buttonStart" onClick={stopGame}>
+						Reset
+					</button>
 				</div>
 			</main>
 		</>
