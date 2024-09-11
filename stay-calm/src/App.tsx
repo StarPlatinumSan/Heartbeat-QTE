@@ -13,11 +13,8 @@ function App() {
 	const [pairBeatGap, setPairBeatGap] = useState<number>(250);
 	const [beatGap, setBeatGap] = useState<number>(1000);
 	const [repetition, setRepetition] = useState<number>(16);
-
 	const lvlRef = useRef<HTMLDivElement>(null);
 	const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
-
-	const beatRef = useRef<HTMLDivElement[]>([]);
 
 	const centerDivRef = useRef<HTMLDivElement>(null);
 	const [isOverlapping, setIsOverlapping] = useState(false);
@@ -180,10 +177,10 @@ function App() {
 			const animationDuration = parseFloat(animSpeed) * 1000;
 
 			const addBeatPair = () => {
-				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} ref={beatRef} type={typeBeat} animationSpeed={animSpeed} />]);
+				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
 
 				const secondBeatTimeout = setTimeout(() => {
-					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} ref={beatRef} type={typeBeat} animationSpeed={animSpeed} />]);
+					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} type={typeBeat} animationSpeed={animSpeed} />]);
 
 					beatIndex += 2;
 					if (beatIndex < repetition) {
