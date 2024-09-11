@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Beat from "./Beat";
+import React from "react";
 
 function App() {
 	const [beats, setBeats] = useState<JSX.Element[]>([]);
@@ -15,6 +16,43 @@ function App() {
 
 	const lvlRef = useRef<HTMLDivElement>(null);
 	const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+	const beatRef = useRef<HTMLDivElement[]>([]);
+
+	const centerDivRef = useRef<HTMLDivElement>(null);
+	const [isOverlapping, setIsOverlapping] = useState(false);
+
+	const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
+		const centerDiv = centerDivRef.current;
+		const centerDivRect = centerDiv?.getBoundingClientRect();
+		const beatRect = beatRef.current?.getBoundingClientRect();
+
+		if (centerDivRect && beatRect) {
+			if (beatRect.left < centerDivRect.right && beatRect.right > centerDivRect.left) {
+				setIsOverlapping(true);
+			} else {
+				setIsOverlapping(false);
+			}
+		}
+	};
+
+	const handleSpacebarPress = (event: KeyboardEvent) => {
+		if (event.key === " " && spaceBarAllowed) {
+			if (isOverlapping) {
+				console.log("SUCCESS");
+			} else {
+				console.log("FAILURE");
+			}
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("keydown", handleSpacebarPress);
+
+		return () => {
+			window.removeEventListener("keydown", handleSpacebarPress);
+		};
+	}, [isOverlapping, spaceBarAllowed]);
 
 	const handleClick = () => {
 		clearBeats();
@@ -142,10 +180,10 @@ function App() {
 			const animationDuration = parseFloat(animSpeed) * 1000;
 
 			const addBeatPair = () => {
-				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
+				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} ref={beatRef} type={typeBeat} animationSpeed={animSpeed} />]);
 
 				const secondBeatTimeout = setTimeout(() => {
-					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
+					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} ref={beatRef} type={typeBeat} animationSpeed={animSpeed} />]);
 
 					beatIndex += 2;
 					if (beatIndex < repetition) {
@@ -192,7 +230,6 @@ function App() {
 	const handleGame = (event: KeyboardEvent | MouseEvent) => {
 		if (((event.type === "keydown" && event.code === "Space") || (event.type === "mousedown" && event.button === 0)) && spaceBarAllowed && isActive) {
 			event.preventDefault();
-			console.log("AHHH");
 		}
 	};
 
@@ -290,7 +327,7 @@ function App() {
 					</button>
 				</header>
 				<div className="center">
-					<div className="reflexe"></div>
+					<div className="reflexe" id="centerReflexe"></div>
 					<div className="line">{beats}</div>
 				</div>
 

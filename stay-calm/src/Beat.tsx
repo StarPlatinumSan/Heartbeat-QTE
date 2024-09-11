@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 interface BeatProps {
 	type: string;
 	animationSpeed: string;
+	ref: React.RefObject<HTMLDivElement>;
 }
 
-export default function Beat({ type, animationSpeed }: BeatProps) {
+export default function Beat({ type, animationSpeed, ref }: BeatProps) {
 	const [dimensions, setDimensions] = useState<{ width: string; margin: string }>({
 		width: "75px",
 		margin: "3px",
@@ -64,7 +65,7 @@ export default function Beat({ type, animationSpeed }: BeatProps) {
 
 	return (
 		<>
-			<div className="beat" style={{ width: dimensions.width, margin: dimensions.margin, animation: `translation ${animationSpeed} linear` }}>
+			<div className="beat" ref={ref} style={{ width: dimensions.width, margin: dimensions.margin, animation: `translation ${animationSpeed} linear` }}>
 				<svg version="1.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="150px" height="73px" viewBox="0 0 150 73" enable-background="new 0 0 150 73" xml:space="preserve">
 					<polyline
 						fill="none"
