@@ -18,7 +18,7 @@ const Beat = forwardRef<HTMLDivElement, BeatProps>(({ type, animationSpeed }: Be
 
 		if (screenWidth < 768) {
 			if (type === "small") {
-				width = "20px";
+				width = "15px";
 				margin = "6px";
 			} else if (type === "medium") {
 				width = "25px";
@@ -40,7 +40,7 @@ const Beat = forwardRef<HTMLDivElement, BeatProps>(({ type, animationSpeed }: Be
 			}
 		} else {
 			if (type === "small") {
-				width = "50px";
+				width = "45px";
 				margin = "4px";
 			} else if (type === "medium") {
 				width = "65px";
