@@ -24,20 +24,6 @@ function App() {
 
 	const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-	/* const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
-		const centerDiv = centerDivRef.current;
-		const centerDivRect = centerDiv?.getBoundingClientRect();
-		const beatRect = beatRef.current?.getBoundingClientRect();
-
-		if (centerDivRect && beatRect) {
-			if (beatRect.left < centerDivRect.right && beatRect.right > centerDivRect.left) {
-				setIsOverlapping(true);
-			} else {
-				setIsOverlapping(false);
-			}
-		}
-	}; */
-
 	const handleSpacebarPress = (event: KeyboardEvent) => {
 		if (event.key === " " && spaceBarAllowed) {
 			checkBeatPosition();
