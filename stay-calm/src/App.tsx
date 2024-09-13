@@ -227,12 +227,10 @@ function App() {
 	const checkBeatPosition = () => {
 		if (spaceBarAllowed) {
 			const centerDiv = centerDivRef.current?.getBoundingClientRect();
+			const beatRefCurrent = beatRefs.current[currentBeatIndex];
 
-			console.log(beatRefs.current.length);
-
-			if (beatRefs.current[currentBeatIndex]) {
-				const beat = beatRefs.current[currentBeatIndex];
-				const beatRect = beat.getBoundingClientRect();
+			if (beatRefCurrent) {
+				const beatRect = beatRefCurrent.getBoundingClientRect();
 
 				if (centerDiv && beatRect.left < centerDiv.right && beatRect.right > centerDiv.left) {
 					console.log("Beat", currentBeatIndex, "is overlapping!");
