@@ -22,20 +22,6 @@ function App() {
 
 	const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-	const handleSpacebarPress = (event: KeyboardEvent) => {
-		if (event.key === " " && spaceBarAllowed) {
-			checkBeatPosition();
-		}
-	};
-
-	useEffect(() => {
-		window.addEventListener("keydown", handleSpacebarPress);
-
-		return () => {
-			window.removeEventListener("keydown", handleSpacebarPress);
-		};
-	}, [isOverlapping, spaceBarAllowed]);
-
 	const handleClick = () => {
 		timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
 		timeoutsRef.current = [];
@@ -161,20 +147,23 @@ function App() {
 			setIsDifficultyButtonDisabled(true);
 			setSpaceBarAllowed(true);
 
-			let beatIndex = 0;
-			let index = 0;
 			const animationDuration = parseFloat(animSpeed) * 1000;
 
+			let beatCounter = 0;
+
 			const addBeatPair = () => {
-				setBeats((prevBeats) => [...prevBeats, <Beat key={beatIndex} ref={(el) => (beatRefs.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
-				index++;
+				const uniqueId = Date.now() + beatCounter;
+
+				setBeats((prevBeats) => [...prevBeats, <Beat key={uniqueId} ref={(el) => (beatRefs.current[beatCounter] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
+
+				beatCounter++;
 
 				const secondBeatTimeout = setTimeout(() => {
-					setBeats((prevBeats) => [...prevBeats, <Beat key={beatIndex + 1} ref={(el) => (beatRefs.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
+					setBeats((prevBeats) => [...prevBeats, <Beat key={uniqueId + 1} ref={(el) => (beatRefs.current[beatCounter] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
 
-					beatIndex += 2;
-					index++;
-					if (beatIndex < repetition) {
+					beatCounter++;
+
+					if (beatCounter < repetition) {
 						const nextBeatTimeout = setTimeout(addBeatPair, pairBeatGap);
 						timeoutsRef.current.push(nextBeatTimeout);
 					} else {
@@ -190,6 +179,7 @@ function App() {
 						timeoutsRef.current.push(enableDifficultyTimeout);
 					}
 				}, beatGap);
+
 				timeoutsRef.current.push(secondBeatTimeout);
 			};
 
@@ -197,7 +187,8 @@ function App() {
 		}
 	}, [isActive, animSpeed, typeBeat, pairBeatGap, beatGap, repetition]);
 
-	/* useEffect qui vérifie que chaque beat a un ref */
+	/* useEffect that proves every beat has a ref */
+
 	/* useEffect(() => {
 		if (beats.length > 0) {
 			const lastIndex = beats.length - 1;
@@ -211,7 +202,9 @@ function App() {
 	const checkBeatPosition = () => {
 		if (spaceBarAllowed) {
 			const centerDiv = centerDivRef.current?.getBoundingClientRect();
-			const beatRefCurrent = beatRefs.current[currentBeatIndex];
+			const beatRefCurrent = beatRefs.current[1];
+
+			/* console.log(beatRefCurrent); */
 
 			if (beatRefCurrent) {
 				const beatRect = beatRefCurrent.getBoundingClientRect();
@@ -222,7 +215,7 @@ function App() {
 					console.log("Beat", currentBeatIndex, "is not overlapping");
 				}
 
-				setCurrentBeatIndex((prevIndex) => (prevIndex + 1) % beats.length);
+				setCurrentBeatIndex((prevIndex) => prevIndex + 1);
 			} else {
 				console.log("Beat reference not found");
 			}
@@ -230,12 +223,27 @@ function App() {
 	};
 
 	useEffect(() => {
-		window.addEventListener("click", checkBeatPosition);
+		const handleSpacebarPress = (event: KeyboardEvent) => {
+			if (event.key === " " && spaceBarAllowed) {
+				event.preventDefault();
+				checkBeatPosition();
+			}
+		};
+
+		const handleClick = (event: MouseEvent) => {
+			if (spaceBarAllowed) {
+				checkBeatPosition();
+			}
+		};
+
+		window.addEventListener("keydown", handleSpacebarPress);
+		window.addEventListener("click", handleClick);
 
 		return () => {
-			window.removeEventListener("click", checkBeatPosition);
+			window.removeEventListener("keydown", handleSpacebarPress);
+			window.removeEventListener("click", handleClick);
 		};
-	}, [beats, spaceBarAllowed]);
+	}, [spaceBarAllowed, beats]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
