@@ -77,4 +77,6 @@ const Beat = forwardRef<HTMLDivElement, BeatProps>(({ type, animationSpeed }: Be
 	);
 });
 
+Beat.displayName = "Beat";
+
 export default Beat;

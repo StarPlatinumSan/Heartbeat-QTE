@@ -18,10 +18,13 @@ function App() {
 
 	const centerDivRef = useRef<HTMLDivElement>(null);
 	const [isOverlapping, setIsOverlapping] = useState(false);
+	const [currentBeatIndex, setCurrentBeatIndex] = useState<number>(0);
 
 	const ref = useRef<(HTMLDivElement | null)[]>([]);
 
-	const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
+	const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+	/* const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
 		const centerDiv = centerDivRef.current;
 		const centerDivRect = centerDiv?.getBoundingClientRect();
 		const beatRect = beatRef.current?.getBoundingClientRect();
@@ -33,15 +36,11 @@ function App() {
 				setIsOverlapping(false);
 			}
 		}
-	};
+	}; */
 
 	const handleSpacebarPress = (event: KeyboardEvent) => {
 		if (event.key === " " && spaceBarAllowed) {
-			if (isOverlapping) {
-				console.log("SUCCESS");
-			} else {
-				console.log("FAILURE");
-			}
+			checkBeatPosition();
 		}
 	};
 
@@ -54,7 +53,10 @@ function App() {
 	}, [isOverlapping, spaceBarAllowed]);
 
 	const handleClick = () => {
+		timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+		timeoutsRef.current = [];
 		clearBeats();
+		setCurrentBeatIndex(0);
 		setIsActive(!isActive);
 	};
 
@@ -180,11 +182,11 @@ function App() {
 			const animationDuration = parseFloat(animSpeed) * 1000;
 
 			const addBeatPair = () => {
-				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} ref={(el) => (ref.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
+				setBeats((prevBeats) => [...prevBeats, <Beat key={beatIndex} ref={(el) => (beatRefs.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
 				index++;
 
 				const secondBeatTimeout = setTimeout(() => {
-					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} ref={(el) => (ref.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
+					setBeats((prevBeats) => [...prevBeats, <Beat key={beatIndex + 1} ref={(el) => (beatRefs.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
 
 					beatIndex += 2;
 					index++;
@@ -220,6 +222,39 @@ function App() {
 		}
 	}, [beats]); */
 
+	/* BUG */
+
+	const checkBeatPosition = () => {
+		if (spaceBarAllowed) {
+			const centerDiv = centerDivRef.current?.getBoundingClientRect();
+
+			console.log(beatRefs.current.length);
+
+			if (beatRefs.current[currentBeatIndex]) {
+				const beat = beatRefs.current[currentBeatIndex];
+				const beatRect = beat.getBoundingClientRect();
+
+				if (centerDiv && beatRect.left < centerDiv.right && beatRect.right > centerDiv.left) {
+					console.log("Beat", currentBeatIndex, "is overlapping!");
+				} else {
+					console.log("Beat", currentBeatIndex, "is not overlapping");
+				}
+
+				setCurrentBeatIndex((prevIndex) => (prevIndex + 1) % beats.length);
+			} else {
+				console.log("Beat reference not found");
+			}
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener("click", checkBeatPosition);
+
+		return () => {
+			window.removeEventListener("click", checkBeatPosition);
+		};
+	}, [beats, spaceBarAllowed]);
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (lvlRef.current && !lvlRef.current.contains(event.target as Node)) {
@@ -236,6 +271,7 @@ function App() {
 
 	const clearBeats = () => {
 		setBeats([]);
+		setCurrentBeatIndex(0);
 	};
 
 	const handleGame = (event: KeyboardEvent | MouseEvent) => {
@@ -338,7 +374,7 @@ function App() {
 					</button>
 				</header>
 				<div className="center">
-					<div className="reflexe" id="centerReflexe"></div>
+					<div className="reflexe" id="centerReflexe" ref={centerDivRef}></div>
 					<div className="line">{beats}</div>
 				</div>
 
