@@ -20,8 +20,6 @@ function App() {
 	const [isOverlapping, setIsOverlapping] = useState(false);
 	const [currentBeatIndex, setCurrentBeatIndex] = useState<number>(0);
 
-	const ref = useRef<(HTMLDivElement | null)[]>([]);
-
 	const beatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
 	const handleSpacebarPress = (event: KeyboardEvent) => {
