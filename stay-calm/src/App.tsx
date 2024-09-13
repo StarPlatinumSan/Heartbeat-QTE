@@ -19,6 +19,8 @@ function App() {
 	const centerDivRef = useRef<HTMLDivElement>(null);
 	const [isOverlapping, setIsOverlapping] = useState(false);
 
+	const ref = useRef<(HTMLDivElement | null)[]>([]);
+
 	const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
 		const centerDiv = centerDivRef.current;
 		const centerDivRect = centerDiv?.getBoundingClientRect();
@@ -174,15 +176,18 @@ function App() {
 			setSpaceBarAllowed(true);
 
 			let beatIndex = 0;
+			let index = 0;
 			const animationDuration = parseFloat(animSpeed) * 1000;
 
 			const addBeatPair = () => {
-				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} type={typeBeat} animationSpeed={animSpeed} />]);
+				setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now()} ref={(el) => (ref.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
+				index++;
 
 				const secondBeatTimeout = setTimeout(() => {
-					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} type={typeBeat} animationSpeed={animSpeed} />]);
+					setBeats((prevBeats) => [...prevBeats, <Beat key={Date.now() + 1} ref={(el) => (ref.current[index] = el)} type={typeBeat} animationSpeed={animSpeed} />]);
 
 					beatIndex += 2;
+					index++;
 					if (beatIndex < repetition) {
 						const nextBeatTimeout = setTimeout(addBeatPair, pairBeatGap);
 						timeoutsRef.current.push(nextBeatTimeout);
@@ -205,6 +210,15 @@ function App() {
 			addBeatPair();
 		}
 	}, [isActive, animSpeed, typeBeat, pairBeatGap, beatGap, repetition]);
+
+	/* useEffect qui vérifie que chaque beat a un ref */
+	/* useEffect(() => {
+		if (beats.length > 0) {
+			const lastIndex = beats.length - 1;
+			const lastRef = ref.current[lastIndex];
+			console.log(`Ref for the latest Beat (Beat ${lastIndex + 1}):`, lastRef);
+		}
+	}, [beats]); */
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
