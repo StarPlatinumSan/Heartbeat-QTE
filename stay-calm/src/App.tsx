@@ -222,7 +222,7 @@ function App() {
 		}
 	}, [beats]); */
 
-	/* BUG */
+	/* BUG beatRefCurrent is always undefined */
 
 	const checkBeatPosition = () => {
 		if (spaceBarAllowed) {
