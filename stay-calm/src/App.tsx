@@ -19,6 +19,8 @@ function App() {
 	const centerDivRef = useRef<HTMLDivElement>(null);
 	const [isOverlapping, setIsOverlapping] = useState(false);
 
+	const beatRef = useRef<HTMLDivElement>(null);
+
 	const checkOverlap = (beatRef: React.RefObject<HTMLDivElement>) => {
 		const centerDiv = centerDivRef.current;
 		const centerDivRect = centerDiv?.getBoundingClientRect();
