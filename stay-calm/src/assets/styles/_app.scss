@@ -377,3 +377,45 @@ body {
     color: $red;
   }
 }
+
+@media screen and (max-width: 800px) {
+  h1 {
+    font-size: 1.2rem;
+  }
+  .header {
+    padding: 2rem;
+  }
+  .btnDiff {
+    padding: 0rem;
+  }
+  .diff {
+    flex-direction: column;
+    max-width: 100%;
+    height: fit-content;
+    margin-top: 3rem;
+  }
+
+  .quick {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .allButtons {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .btnDiff {
+      width: 10rem;
+    }
+  }
+
+  .complex {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .buttonDifficulty {
+    padding: 0.2rem;
+  }
+}
