@@ -3,7 +3,8 @@ import Beat from "./Beat";
 import React from "react";
 import SoundEffect from "./SoundEffect";
 
-/* App built by StarPlatinumSan, also known as Andrei Bituleanu */
+/* App built by StarPlatinumSan, also known as Andrei Bituleanu. */
+/* It's goal is to reproduce the stay calm quick time events from Dark Pictures Anthology Games. */
 
 function App() {
   const [beats, setBeats] = useState<JSX.Element[]>([]);
