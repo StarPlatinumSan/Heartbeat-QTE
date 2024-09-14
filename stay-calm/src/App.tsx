@@ -18,7 +18,7 @@ function App() {
   const timeoutsRef = useRef<number[]>([]);
   const soundEffectRef = useRef<any>(null);
 
-  const [beatStatus, setBeatStatus] = useState<{ [key: number]: boolean }>({});
+  const [, setBeatStatus] = useState<{ [key: number]: boolean }>({});
 
   const centerDivRef = useRef<HTMLDivElement>(null);
 

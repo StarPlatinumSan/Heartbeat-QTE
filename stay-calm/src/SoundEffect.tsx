@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
-const SoundEffect = forwardRef((props, ref) => {
+const SoundEffect = forwardRef((_props, ref) => {
   const audioRef = useRef(null);
 
   const handlePlay = useCallback(() => {
