@@ -519,6 +519,10 @@ function App() {
             Reset
           </button>
         </div>
+
+        <span className="author">
+          By <a href="https://github.com/StarPlatinumSan">StarPlatinumSan</a>
+        </span>
       </main>
     </>
   );
