@@ -370,7 +370,7 @@ function App() {
       }
     };
 
-    const handleClickMouse = (event: MouseEvent) => {
+    const handleClickMouse = () => {
       if (spaceBarAllowed) {
         checkBeatPosition();
       }
