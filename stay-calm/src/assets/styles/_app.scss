@@ -392,7 +392,6 @@ body {
     flex-direction: column;
     max-width: 100%;
     height: fit-content;
-    margin-top: 3rem;
   }
 
   .quick {
@@ -417,5 +416,13 @@ body {
 
   .buttonDifficulty {
     padding: 0.2rem;
+  }
+
+  .author {
+    margin: 0;
+  }
+
+  .beat {
+    height: 8rem;
   }
 }
