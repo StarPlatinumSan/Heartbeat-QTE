@@ -15,8 +15,8 @@ function App() {
   const [beatGap, setBeatGap] = useState<number>(2000);
   const [repetition, setRepetition] = useState<number>(16);
   const lvlRef = useRef<HTMLDivElement>(null);
-  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
-  const soundEffectRef = useRef<SoundEffect>(null);
+  const timeoutsRef = useRef<number[]>([]);
+  const soundEffectRef = useRef<any>(null);
 
   const [beatStatus, setBeatStatus] = useState<{ [key: number]: boolean }>({});
 
@@ -39,7 +39,10 @@ function App() {
 
     setIsActive((prev) => !prev);
 
-    document.getElementById("fail").style.transform = "translate(-50%, -100%)";
+    const element = document.getElementById("fail");
+    if (element) {
+      element.style.transform = "translate(-50%, -100%)";
+    }
   };
 
   const closeDiff = () => {
@@ -177,14 +180,14 @@ function App() {
 
       const customBtn = document.getElementById("custom");
 
-      if (customBtn.style.backgroundColor === "orange" && animSpeed >= 5) {
-        setPairBeatGap(800);
-        setBeatGap(2000);
+      if (customBtn) {
+        if (customBtn.style.backgroundColor === "orange" && animSpeed >= 5) {
+          setPairBeatGap(800);
+          setBeatGap(2000);
+        }
       }
 
-      console.log(pairBeatGap + " " + beatGap);
-
-      const animationDuration = parseFloat(animSpeed) * 1000;
+      const animationDuration = animSpeed * 1000;
 
       let beatCounter = 0;
 
@@ -254,9 +257,16 @@ function App() {
 
         currentBeatIndexRef.current += 1;
 
+        if (!centerDiv) {
+          return;
+        }
+
         if (beatRect.left < centerDiv.right && beatRect.right > centerDiv.left) {
           console.log("Beat", adjustedIndex, "is overlapping!");
-          soundEffectRef.current.play();
+          if (soundEffectRef.current) {
+            soundEffectRef.current.play();
+          }
+
           successBeat(beatRefCurrent);
           setBeatStatus((prev) => ({ ...prev, [adjustedIndex]: true }));
         } else {
@@ -326,6 +336,9 @@ function App() {
 
   const failureMessage = () => {
     const message = document.getElementById("fail");
+
+    if (!message) return;
+
     message.style.transform = "translate(-50%, 15%)";
 
     setTimeout(function () {
@@ -387,7 +400,7 @@ function App() {
   }, []);
 
   const handleGame = (event: KeyboardEvent | MouseEvent) => {
-    if (((event.type === "keydown" && event.code === "Space") || (event.type === "mousedown" && event.button === 0)) && spaceBarAllowed && isActive) {
+    if (((event.type === "keydown" && (event as KeyboardEvent).code === "Space") || (event.type === "mousedown" && (event as MouseEvent).button === 0)) && spaceBarAllowed && isActive) {
       event.preventDefault();
     }
   };
@@ -455,7 +468,7 @@ function App() {
             </button>
             <div className="speedDiv">
               <h3>Beats speed:</h3>
-              <input type="range" id="speedRange" className="rangeInput" min={1} max={10} step={0.5} value={parseFloat(animSpeed)} onChange={handleCustomSpeed} />
+              <input type="range" id="speedRange" className="rangeInput" min={1} max={10} step={0.5} value={animSpeed} onChange={handleCustomSpeed} />
             </div>
 
             <div className="sizeDiv">
