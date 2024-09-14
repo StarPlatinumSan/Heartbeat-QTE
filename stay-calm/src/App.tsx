@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import Beat from "./Beat";
 import React from "react";
 import SoundEffect from "./SoundEffect";
@@ -243,7 +243,6 @@ function App() {
   const checkBeatPosition = () => {
     if (spaceBarAllowed) {
       const centerDiv = centerDivRef.current?.getBoundingClientRect();
-      let isOverlapDetected = false;
 
       let adjustedIndex = currentBeatIndexRef.current + 1;
 
@@ -256,7 +255,6 @@ function App() {
         currentBeatIndexRef.current += 1;
 
         if (beatRect.left < centerDiv.right && beatRect.right > centerDiv.left) {
-          isOverlapDetected = true;
           console.log("Beat", adjustedIndex, "is overlapping!");
           soundEffectRef.current.play();
           successBeat(beatRefCurrent);
