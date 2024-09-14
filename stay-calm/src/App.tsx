@@ -3,6 +3,8 @@ import Beat from "./Beat";
 import React from "react";
 import SoundEffect from "./SoundEffect";
 
+/* App built by StarPlatinumSan, also known as Andrei Bituleanu */
+
 function App() {
   const [beats, setBeats] = useState<JSX.Element[]>([]);
   const [isActive, setIsActive] = useState<boolean>(false);
