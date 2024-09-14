@@ -20,9 +20,6 @@ function App() {
 
   const [beatStatus, setBeatStatus] = useState<{ [key: number]: boolean }>({});
 
-  const [crescendo, setCrescendo] = useState(false);
-  const [deCrescendo, setDeCrescendo] = useState(false);
-
   const centerDivRef = useRef<HTMLDivElement>(null);
 
   let currentBeatIndexRef = useRef<number>(0);
