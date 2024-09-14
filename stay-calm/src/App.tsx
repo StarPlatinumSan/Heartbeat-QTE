@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Beat from "./Beat";
 import React from "react";
+import SoundEffect from "./SoundEffect";
 
 function App() {
   const [beats, setBeats] = useState<JSX.Element[]>([]);
@@ -15,6 +16,7 @@ function App() {
   const [repetition, setRepetition] = useState<number>(16);
   const lvlRef = useRef<HTMLDivElement>(null);
   const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const soundEffectRef = useRef<SoundEffect>(null);
 
   const [beatStatus, setBeatStatus] = useState<{ [key: number]: boolean }>({});
 
@@ -200,7 +202,6 @@ function App() {
         const uniqueId = Date.now() + beatCounter;
 
         setBeats((prevBeats) => [...prevBeats, <Beat key={uniqueId} ref={(el) => (beatRefs.current[beatCounter] = el)} type={typeBeat} animationSpeed={animSpeed} data-index={beatCounter} />]);
-
         beatCounter++;
 
         const secondBeatTimeout = setTimeout(() => {
@@ -245,6 +246,7 @@ function App() {
   const checkBeatPosition = () => {
     if (spaceBarAllowed) {
       const centerDiv = centerDivRef.current?.getBoundingClientRect();
+      let isOverlapDetected = false;
 
       let adjustedIndex = currentBeatIndexRef.current + 1;
 
@@ -257,7 +259,9 @@ function App() {
         currentBeatIndexRef.current += 1;
 
         if (beatRect.left < centerDiv.right && beatRect.right > centerDiv.left) {
+          isOverlapDetected = true;
           console.log("Beat", adjustedIndex, "is overlapping!");
+          soundEffectRef.current.play();
           successBeat(beatRefCurrent);
           setBeatStatus((prev) => ({ ...prev, [adjustedIndex]: true }));
         } else {
@@ -348,8 +352,6 @@ function App() {
     setIsActive(false);
     setIsDifficultyButtonDisabled(false);
     setSpaceBarAllowed(false);
-
-    /* clearBeats(); */
   };
 
   useEffect(() => {
@@ -483,6 +485,8 @@ function App() {
               <h3>Number of beats:</h3>
               <input type="number" id="repetitionInput" className="repetition" min={3} max={60} step={1} value={repetition} onChange={handleCustomRepetition} />
             </div>
+
+            <SoundEffect ref={soundEffectRef} />
           </div>
         </div>
         <header className="header">
